@@ -6,7 +6,7 @@ def eval_pope(answers, label_file):
     label_list = [json.loads(q)['label'] for q in open(label_file, 'r')]
 
     for answer in answers:
-        text = answer['text']
+        text = answer['text'].lower()  # 转换为小写
 
         # Only keep the first sentence
         if text.find('.') != -1:
@@ -14,7 +14,7 @@ def eval_pope(answers, label_file):
 
         text = text.replace(',', '')
         words = text.split(' ')
-        if 'No' in words or 'not' in words or 'no' in words:
+        if 'no' in words or 'not' in words:  # 只需要检查小写形式
             answer['text'] = 'no'
         else:
             answer['text'] = 'yes'
@@ -70,6 +70,8 @@ if __name__ == "__main__":
 
     questions = [json.loads(line) for line in open(args.question_file)]
     questions = {question['question_id']: question for question in questions}
+    
+    
     answers = [json.loads(q) for q in open(args.result_file)]
     for file in os.listdir(args.annotation_dir):
         assert file.startswith('coco_pope_')
